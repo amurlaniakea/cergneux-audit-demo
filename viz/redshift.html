@@ -15,9 +15,9 @@
 <h2>2. ¿Dónde está r para cada ρ? (p. 32, 48)</h2>
 <div class="panel">
 <div class="row"><label>ρ = 1+z <b id="vr"></b><input id="rho" type="range" min="1.01" max="1090" step="0.01" value="1.1"></label></div>
-<canvas id="b" width="900" height="260" role="img" aria-label="r sobre r_s frente a rho"></canvas>
+<canvas id="b" width="900" height="260" role="img" aria-label="Distancia sobre el horizonte frente a rho"></canvas>
 <p class="num" id="rr"></p>
-<div class="verdict">ρ = 1/√(1−rₛ/r) despeja r/rₛ = ρ²/(ρ²−1). Un corrimiento pequeño exige r mucho mayor que rₛ, y el PDF sitúa el CMB justo en r = rₛ. Falta una regla que convierta distancia a la Tierra en r.</div>
+<div class="verdict">ρ = 1/√(1−rₛ/r) despeja r/rₛ = ρ²/(ρ²−1). Un corrimiento pequeño exige r mucho mayor que rₛ (ρ = 1,1 ⇒ r ≈ 5,76 rₛ), y el PDF sitúa el CMB justo en r = rₛ: la curva se pega al horizonte (r − rₛ → 0) cuando ρ crece. Falta una regla que convierta distancia a la Tierra en r.</div>
 </div>
 
 <h2>3. Conservar la energía banda a banda (pp. 29-30)</h2>
@@ -37,12 +37,24 @@ function plot(cv,fns,xmax,ymax,xl,yl){
  return{X,Y,g};
 }
 plot($('a'),[[z=>1+z,'--ref'],[z=>1/(1+z),'--bad']],2,3,'z','Δt_obs/Δt_rest');
+function drawB(r){
+ const cv=$('b'),g=cv.getContext('2d'),W=cv.width,H=cv.height,m={l:64,r:16,t:14,b:36};
+ g.clearRect(0,0,W,H);
+ const x0=0,x1=Math.log10(1090)*1.0,y0=-6.5,y1=2;
+ const X=p=>m.l+(Math.log10(p)-x0)/(x1-x0)*(W-m.l-m.r),Y=v=>H-m.b-(v-y0)/(y1-y0)*(H-m.t-m.b);
+ g.font='12px system-ui';g.lineWidth=1;
+ for(let k=-6;k<=2;k++){const y=Y(k);g.strokeStyle=css('--line');g.beginPath();g.moveTo(m.l,y);g.lineTo(W-m.r,y);g.stroke();g.fillStyle=css('--mute');g.fillText('10^'+k,6,y+4)}
+ [1,10,100,1000].forEach(p=>{const x=X(p);g.strokeStyle=css('--line');g.beginPath();g.moveTo(x,m.t);g.lineTo(x,H-m.b);g.stroke();g.fillStyle=css('--mute');g.fillText(String(p),x-8,H-m.b+16)});
+ g.strokeStyle=css('--ref');g.lineWidth=2.5;g.beginPath();
+ for(let i=0;i<=300;i++){const p=1.01*Math.pow(1090/1.01,i/300),v=Math.log10(1/(p*p-1)),x=X(p),y=Y(v);i?g.lineTo(x,y):g.moveTo(x,y)}
+ g.stroke();
+ const v=Math.log10(1/(r*r-1));g.fillStyle=css('--bad');g.beginPath();g.arc(X(r),Y(v),6,0,7);g.fill();
+ g.fillStyle=css('--mute');g.fillText('ρ = 1+z (escala log)',W-150,H-6);g.fillText('(r − rₛ)/rₛ (escala log)',m.l+4,m.t+10);
+}
 function upd(){
  const r=+$('rho').value;$('vr').textContent=r.toFixed(2);
- const f=p=>p*p/(p*p-1);
- const o=plot($('b'),[[p=>f(Math.max(p,1.0001)),'--ref']],1090,8,'ρ','r / rₛ');
- const x=o.X(r),y=o.Y(Math.min(f(r),8));o.g.fillStyle=css('--bad');o.g.beginPath();o.g.arc(x,y,5,0,7);o.g.fill();
- $('rr').textContent=`ρ = ${r.toFixed(2)}  →  r/rₛ = ${f(r).toFixed(3)}`;
+ drawB(r);
+ $('rr').textContent=`ρ = ${r.toFixed(2)}  →  r/rₛ = ${(r*r/(r*r-1)).toFixed(4)}   (r − rₛ)/rₛ = ${(1/(r*r-1)).toExponential(2)}`;
  const p=+$('rho2').value;$('vp').textContent=p;
  $('em').textContent=`emisividad efectiva = ρ⁴ = ${(p**4).toExponential(2)}   (estándar: 1)`;
 }
