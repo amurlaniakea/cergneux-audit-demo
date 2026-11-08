@@ -23,6 +23,8 @@
 <h2>3. Conservar la energía banda a banda (pp. 29-30)</h2>
 <div class="panel">
 <div class="row"><label>ρ <b id="vp"></b><input id="rho2" type="range" min="1" max="1090" step="1" value="1090"></label></div>
+<div class="legend"><span><i style="background:var(--ref)"></i>Estándar: cuerpo negro a Tₑ/ρ (emisividad 1, lo que mide FIRAS)</span><span><i style="background:var(--bad)"></i>Eₑ = Eᵣ por bandas: misma forma, amplitud ρ⁴</span></div>
+<canvas id="c" width="900" height="280" role="img" aria-label="Espectro recibido: estándar frente a conservación de energía por bandas"></canvas>
 <p class="num" id="em"></p>
 <div class="verdict">Si cada banda conserva su energía (Eₑ = Eᵣ) mientras f → f/ρ, el espectro recibido tiene forma de cuerpo negro a Tₑ/ρ pero con emisividad ρ⁴. El CMB medido por FIRAS es un cuerpo negro con emisividad 1 (±1e-5).</div>
 </div>
@@ -51,11 +53,28 @@ function drawB(r){
  const v=Math.log10(1/(r*r-1));g.fillStyle=css('--bad');g.beginPath();g.arc(X(r),Y(v),6,0,7);g.fill();
  g.fillStyle=css('--mute');g.fillText('ρ = 1+z (escala log)',W-150,H-6);g.fillText('(r − rₛ)/rₛ (escala log)',m.l+4,m.t+10);
 }
+function drawC(rho){
+ const cv=$('c'),g=cv.getContext('2d'),W=cv.width,H=cv.height,m={l:64,r:16,t:14,b:36};
+ g.clearRect(0,0,W,H);
+ const xa=Math.log10(0.1),xb=Math.log10(20),ya=-3,yb=Math.max(2,4*Math.log10(rho)+1);
+ const X=x=>m.l+(Math.log10(x)-xa)/(xb-xa)*(W-m.l-m.r),Y=v=>H-m.b-(v-ya)/(yb-ya)*(H-m.t-m.b);
+ g.font='12px system-ui';g.lineWidth=1;
+ const step=yb>8?2:1;
+ for(let k=Math.ceil(ya);k<=yb;k+=step){const y=Y(k);g.strokeStyle=css('--line');g.beginPath();g.moveTo(m.l,y);g.lineTo(W-m.r,y);g.stroke();g.fillStyle=css('--mute');g.fillText('10^'+k,6,y+4)}
+ [0.1,1,10].forEach(x=>{const px=X(x);g.strokeStyle=css('--line');g.beginPath();g.moveTo(px,m.t);g.lineTo(px,H-m.b);g.stroke();g.fillStyle=css('--mute');g.fillText(String(x),px-8,H-m.b+16)});
+ const shape=x=>Math.log10(x*x*x/Math.expm1(x));
+ [[0,'--ref',2.5],[4*Math.log10(rho),'--bad',2.5]].forEach(([off,c,w])=>{
+  g.strokeStyle=css(c);g.lineWidth=w;g.beginPath();
+  for(let i=0;i<=300;i++){const x=0.1*Math.pow(200,i/300),v=shape(x)+off,px=X(x),py=Y(v);i?g.lineTo(px,py):g.moveTo(px,py)}
+  g.stroke()});
+ g.fillStyle=css('--mute');g.fillText('hν / k_B·Tₑ/ρ (escala log)',W-190,H-6);g.fillText('energía espectral relativa (log)',m.l+4,m.t+10);
+}
 function upd(){
  const r=+$('rho').value;$('vr').textContent=r.toFixed(2);
  drawB(r);
  $('rr').textContent=`ρ = ${r.toFixed(2)}  →  r/rₛ = ${(r*r/(r*r-1)).toFixed(4)}   (r − rₛ)/rₛ = ${(1/(r*r-1)).toExponential(2)}`;
  const p=+$('rho2').value;$('vp').textContent=p;
+ drawC(p);
  $('em').textContent=`emisividad efectiva = ρ⁴ = ${(p**4).toExponential(2)}   (estándar: 1)`;
 }
 document.querySelectorAll('input').forEach(e=>e.addEventListener('input',upd));upd();
