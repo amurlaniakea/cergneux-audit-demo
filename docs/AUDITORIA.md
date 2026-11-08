@@ -4,7 +4,7 @@
 
 «TC» = *Teoría del Tiempo Cuántico* (ene. 2025); «Túnel» = *Reinterpretación del efecto túnel* (dic. 2025).
 
-**Resumen:** ℹ️ Identidad: 2 · ✅ Coincide: 2 · ❌ Discrepa: 7 · ⚠️ A verificar: 1 · 📄 Documental: 2
+**Resumen:** ℹ️ Identidad: 2 · ✅ Coincide: 3 · ❌ Discrepa: 7 · ⚠️ A verificar: 2 · 📄 Documental: 2
 
 | # | Afirmación | Página | Veredicto | Detalle | Test |
 |---|---|---|---|---|---|
@@ -22,5 +22,7 @@
 | 12 | La meseta de la tasa de escape a baja T prueba tiempo discreto | Túnel §7 | ❌ Discrepa | La explica el túnel con disipación (Devoret-Martinis-Clarke 1985) | `test_mqt_plateau_below_crossover_without_discrete_time` |
 | 13 | Test 1: T₂ ~ τ_p·2π/(ΔE/ħ) | Túnel §12 | ❌ Discrepa | ~1e-53 s frente a ~1e-4 s medidos | `test_cergneux_t2_prediction_is_absurdly_short` |
 | 14 | El túnel es un salto discreto sin trayectoria continua | TC p. 55; Túnel §7 | ❌ Discrepa | La evolución continua de Schrödinger reproduce la transmisión analítica; no hace falta el salto | `test_wavepacket_transmission_matches_analytic` |
+| 15 | El fotón avanza una celda de Planck por tick (c = ℓ_p/T_p) y las partículas con masa son más lentas | TC pp. 5-6 | ✅ Coincide | Realizable como paseo cuántico discreto 1D: v=1 exacta sin masa, v<1 con masa; el paquete simulado lo confirma | `test_lattice_walk_reproduces_postulated_speeds` |
+| 16 | Una retícula de Planck es compatible con la invariancia de Lorentz macroscópica | TC pp. 4-6, 12 | ⚠️ A verificar | Modelo 1D: la desviación escala como (E/E_P)² y es ínfima a energías accesibles; no prueba la anisotropía 3D ni la simultaneidad universal | `test_lattice_lorentz_violation_scales_as_lambda_squared` |
 
 El veredicto es la tesis del autor del repo; que el test pase significa que la evidencia es reproducible.

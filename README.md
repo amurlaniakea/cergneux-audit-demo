@@ -56,6 +56,7 @@ flowchart LR
 | **Leyes del Tiempo, Fotón y Luz** | `laws.py` | Identidad $L_p/T_p = c$, aritmética de Mercurio, ticks por segundo |
 | **Cosmología: $r_s$ vs $c/H_0$, supernovas, emisividad** | `cosmology.py` | Radio de Schwarzschild de la masa crítica, estiramiento $(1+z)$, Ley de la Fila, energía por bandas |
 | **Unión Josephson: transmon, washboard, túnel** | `josephson.py` | Niveles transmon, potencial washboard, tasa de escape térmica/cuántica, predicción $T_2$ |
+| **Retícula discreta de Planck** | `lattice.py` | Paseo cuántico 1D: velocidad exacta de la luz, dispersión ω(k) y violación de Lorentz ∝ (E/E_P)² |
 | **TDSE: paquete de ondas contra barrera** | `tdse.py` | Split-step Fourier, transmisión analítica rectangular |
 
 **Conceptos clave** que aparecen en el código y los tests:
@@ -162,7 +163,7 @@ def test_hamilton_sign_error_in_paper():
 
 ## Hoja de ruta
 
-- [ ] Retícula discreta tipo Planck para el paquete de ondas (dispersión y violación de Lorentz).
+- [x] Retícula discreta tipo Planck como paseo cuántico 1D (`lattice.py`). Pendiente: versión 3D (anisotropía) y comparación con límites observacionales (a verificar).
 - [ ] Contrastar el estiramiento de supernovas con datos reales (Pantheon+ / Union3).
 - [ ] Contactar al autor para discutir los veredictos documentados.
 - [ ] Añadir visualizador para la precesión de Mercurio (dilatación vs. precesión geométrica).
