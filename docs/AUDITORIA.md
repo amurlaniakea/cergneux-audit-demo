@@ -4,7 +4,7 @@
 
 «TC» = *Teoría del Tiempo Cuántico* (ene. 2025); «Túnel» = *Reinterpretación del efecto túnel* (dic. 2025).
 
-**Resumen:** ℹ️ Identidad: 2 · ✅ Coincide: 3 · ❌ Discrepa: 8 · 📄 Documental: 2 · ⚠️ A verificar: 1
+**Resumen:** ℹ️ Identidad: 2 · ✅ Coincide: 4 · ❌ Discrepa: 9 · 📄 Documental: 2 · ⚠️ A verificar: 1
 
 | # | Afirmación | Página | Veredicto | Detalle | Test |
 |---|---|---|---|---|---|
@@ -24,5 +24,7 @@
 | 14 | El túnel es un salto discreto sin trayectoria continua | TC p. 55; Túnel §7 | ❌ Discrepa | La evolución continua de Schrödinger reproduce la transmisión analítica; no hace falta el salto | `test_wavepacket_transmission_matches_analytic` |
 | 15 | El fotón avanza una celda de Planck por tick (c = ℓ_p/T_p) y las partículas con masa son más lentas | TC pp. 5-6 | ✅ Coincide | Realizable como paseo cuántico discreto 1D: v=1 exacta sin masa, v<1 con masa; el paquete simulado lo confirma | `test_lattice_walk_reproduces_postulated_speeds` |
 | 16 | Una retícula de Planck es compatible con la invariancia de Lorentz macroscópica | TC pp. 4-6, 12 | ⚠️ A verificar | Modelo 1D: la desviación escala como (E/E_P)² y es ínfima a energías accesibles; no prueba la anisotropía 3D ni la simultaneidad universal | `test_lattice_lorentz_violation_scales_as_lambda_squared` |
+| 17 | La luz avanza una celda de Planck por tick en cualquier dirección de una retícula cúbica (c isótropa) | TC pp. 4-6 | ❌ Discrepa | Literal en retícula cúbica la velocidad varía un 42 % entre ejes y diagonales (1/√3 a 1, o 1 a √3); las pruebas de isotropía de c llegan a ~1e-17 | `test_cubic_lattice_light_is_anisotropic_at_order_one` |
+| 18 | Una retícula espacial de Planck es compatible con las cotas de dispersión de la luz | TC pp. 4-6 | ✅ Coincide | Dispersión cuadrática v≈1−(ka)²/8 ⇒ E_QG,2≈3,5 E_P ≈ 4e19 GeV, muy por encima de la cota de Fermi-LAT (1,3e11 GeV): compatible con las cotas y no detectable hoy | `test_spatial_lattice_dispersion_is_far_above_grb_bound` |
 
 El veredicto es la tesis del autor del repo; que el test pase significa que la evidencia es reproducible.

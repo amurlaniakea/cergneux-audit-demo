@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Retícula de Planck: dispersión y anisotropía</title><link rel="stylesheet" href="common.css"></head>
+<body><main>
+<h1>Retícula discreta: ¿se comporta la luz como la real?</h1>
+<p class="lead">Dos pruebas sobre el postulado «una celda de Planck por tick». Izquierda: velocidad de la luz según la dirección en una retícula cúbica. Derecha: relación de dispersión del paseo cuántico 1D frente a la relatividad.</p>
+
+<h2>1. Velocidad de la luz según la dirección (plano xy de una retícula cúbica)</h2>
+<div class="panel">
+<div class="legend"><span><i style="background:var(--mute)"></i>Isótropa (c real)</span><span><i style="background:var(--ref)"></i>Pasos por caras: 1/(|cosφ|+|senφ|)</span><span><i style="background:var(--bad)"></i>Pasos a los 26 vecinos: 1/máx(|cosφ|,|senφ|)</span></div>
+<canvas id="a" width="520" height="520" style="max-width:520px;margin:0 auto" role="img" aria-label="Velocidad de la luz en función de la dirección"></canvas>
+<div class="row"><label>Dirección φ (°) <b id="vA"></b><input id="ang" type="range" min="0" max="90" step="1" value="45"></label></div>
+<p class="num" id="ra"></p>
+<div class="verdict">Las pruebas de laboratorio de isotropía de c llegan a ~10⁻¹⁷ (Eisele et al. 2009). Aquí la variación es de decenas por ciento. El PDF también permite saltos a «cualquier píxel»; eso evita la anisotropía pero abandona la localidad.</div>
+</div>
+
+<h2>2. Dispersión ω(k) del paseo cuántico 1D</h2>
+<div class="panel">
+<div class="legend"><span><i style="background:var(--ref)"></i>Retícula: cos ω = cosθ·cos k</span><span><i style="background:var(--bad)"></i>Continuo: √(k²+θ²)</span><span><i style="background:var(--mute)"></i>Luz: ω = k</span></div>
+<div class="row"><label>Masa θ (unidades de retícula) <b id="vT"></b><input id="th" type="range" min="0" max="1.2" step="0.01" value="0.4"></label></div>
+<canvas id="b" width="900" height="300" role="img" aria-label="Relación de dispersión"></canvas>
+<p class="num" id="rb"></p>
+<div class="verdict ok">Sin masa (θ=0) la retícula reproduce la luz exactamente. La desviación con masa crece como (E/E_P)² y para un protón de 7 TeV es del orden de 10⁻³⁹: indetectable.</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function drawA(deg){
+ const cv=$('a'),g=cv.getContext('2d'),W=cv.width,H=cv.height,c=W/2,S=150;g.clearRect(0,0,W,H);
+ g.lineWidth=1;g.strokeStyle=css('--line');g.beginPath();g.moveTo(10,c);g.lineTo(W-10,c);g.moveTo(c,10);g.lineTo(c,H-10);g.stroke();
+ g.setLineDash([5,4]);g.strokeStyle=css('--mute');g.beginPath();g.arc(c,c,S,0,7);g.stroke();g.setLineDash([]);
+ const curve=(fn,col)=>{g.strokeStyle=css(col);g.lineWidth=2.5;g.beginPath();for(let i=0;i<=720;i++){const p=i/720*2*Math.PI,r=fn(p)*S;const x=c+r*Math.cos(p),y=c-r*Math.sin(p);i?g.lineTo(x,y):g.moveTo(x,y)}g.stroke()};
+ const ax=p=>1/(Math.abs(Math.cos(p))+Math.abs(Math.sin(p))),ki=p=>1/Math.max(Math.abs(Math.cos(p)),Math.abs(Math.sin(p)));
+ curve(ax,'--ref');curve(ki,'--bad');
+ const p=deg*Math.PI/180;g.fillStyle=css('--ink');[ax,ki].forEach(f=>{g.beginPath();g.arc(c+f(p)*S*Math.cos(p),c-f(p)*S*Math.sin(p),5,0,7);g.fill()});
+ g.fillStyle=css('--mute');g.font='12px system-ui';g.fillText('x',W-18,c-6);g.fillText('y',c+6,18);
+ $('ra').textContent=`φ = ${deg}°   pasos por caras: v = ${ax(p).toFixed(3)} c   26 vecinos: v = ${ki(p).toFixed(3)} c   (isótropa: 1,000 c)`;
+}
+function drawB(th){
+ const cv=$('b'),g=cv.getContext('2d'),W=cv.width,H=cv.height,m={l:50,r:14,t:12,b:30};g.clearRect(0,0,W,H);
+ g.strokeStyle=css('--line');g.strokeRect(m.l,m.t,W-m.l-m.r,H-m.t-m.b);
+ const kmax=Math.PI,wmax=Math.PI+0.3,X=k=>m.l+k/kmax*(W-m.l-m.r),Y=w=>H-m.b-w/wmax*(H-m.t-m.b);
+ const line=(fn,col,w,dash)=>{g.setLineDash(dash||[]);g.strokeStyle=css(col);g.lineWidth=w;g.beginPath();for(let i=0;i<=400;i++){const k=kmax*i/400,v=Math.min(fn(k),wmax);i?g.lineTo(X(k),Y(v)):g.moveTo(X(k),Y(v))}g.stroke();g.setLineDash([])};
+ line(k=>k,'--mute',1.5,[5,4]);line(k=>Math.sqrt(k*k+th*th),'--bad',2);line(k=>Math.acos(Math.cos(th)*Math.cos(k)),'--ref',2.5);
+ g.fillStyle=css('--mute');g.font='12px system-ui';g.fillText('k (rad por celda)',W-120,H-8);g.fillText('ω (rad por tick)',4,m.t+10);
+ const k=0.5,w=Math.acos(Math.cos(th)*Math.cos(k)),wc=Math.sqrt(k*k+th*th);
+ $('rb').textContent=`θ = ${th.toFixed(2)}   a k = 0,5: ω_retícula = ${w.toFixed(4)}   ω_continuo = ${wc.toFixed(4)}   diferencia relativa = ${((w/wc-1)*100).toFixed(3)} %`;
+}
+function upd(){const d=+$('ang').value,t=+$('th').value;$('vA').textContent=d;$('vT').textContent=t.toFixed(2);drawA(d);drawB(t)}
+document.querySelectorAll('input').forEach(e=>e.addEventListener('input',upd));upd();
+</script></main></body></html>

@@ -57,6 +57,7 @@ flowchart LR
 | **Cosmología: $r_s$ vs $c/H_0$, supernovas, emisividad** | `cosmology.py` | Radio de Schwarzschild de la masa crítica, estiramiento $(1+z)$, Ley de la Fila, energía por bandas |
 | **Unión Josephson: transmon, washboard, túnel** | `josephson.py` | Niveles transmon, potencial washboard, tasa de escape térmica/cuántica, predicción $T_2$ |
 | **Retícula discreta de Planck** | `lattice.py` | Paseo cuántico 1D: velocidad exacta de la luz, dispersión ω(k) y violación de Lorentz ∝ (E/E_P)² |
+| **Retícula cúbica 3D y cotas** | `lattice3d.py` | Anisotropía de la luz en retícula cúbica y dispersión espacial, frente a las cotas de isotropía de laboratorio y de Fermi-LAT |
 | **TDSE: paquete de ondas contra barrera** | `tdse.py` | Split-step Fourier, transmisión analítica rectangular |
 
 **Conceptos clave** que aparecen en el código y los tests:
@@ -96,8 +97,9 @@ Dos páginas HTML autocontenidas (sin dependencias, se abren directamente en el 
 |--------------|-------------|-----------|
 | [`viz/josephson.html`](https://amurlaniakea.github.io/cergneux-audit-demo/viz/josephson.html) | Potencial *washboard*, barrera $\Delta U$, frecuencia de plasma $\omega_p$, tasa de escape térmica vs. cuántica, y la predicción de $T_2$ del Test 1 contra la escala real de un *transmon* | Sesgo $I/I_0$, corriente crítica $I_0$, capacitancia $C$, factor de calidad $Q$, frecuencia del qubit $f_{01}$ |
 | [`viz/redshift.html`](https://amurlaniakea.github.io/cergneux-audit-demo/viz/redshift.html) | Tres paneles: (1) duración observada de supernovas Ia: estándar $(1+z)$ vs. Ley de la Fila $1/(1+z)$; (2) $(r-r_s)/r_s$ en escala log para un $\rho = 1+z$ dado; (3) emisividad efectiva $\rho^4$ si se conserva la energía por bandas | $\rho = 1+z$ (panel 2 y 3) |
+| [`viz/lattice.html`](https://amurlaniakea.github.io/cergneux-audit-demo/viz/lattice.html) | (1) Velocidad de la luz según la dirección en una retícula cúbica (pasos por caras o a 26 vecinos) frente a la isótropa; (2) dispersión ω(k) del paseo cuántico frente al continuo | Dirección $\varphi$, masa $\theta$ |
 
-> **Nota**: Los visualizadores no se renderizan en la vista de GitHub. Los enlaces arriba apuntan a **GitHub Pages** (rama `main`, raíz del repo). Si el enlace no funciona, abre el archivo local `viz/josephson.html` o `viz/redshift.html` en tu navegador.
+> **Nota**: Los visualizadores no se renderizan en la vista de GitHub. Los enlaces arriba apuntan a **GitHub Pages** (rama `main`, raíz del repo). Si el enlace no funciona, abre el archivo local `viz/josephson.html`, `viz/redshift.html` o `viz/lattice.html` en tu navegador.
 
 ---
 
@@ -163,7 +165,7 @@ def test_hamilton_sign_error_in_paper():
 
 ## Hoja de ruta
 
-- [x] Retícula discreta tipo Planck como paseo cuántico 1D (`lattice.py`). Pendiente: versión 3D (anisotropía) y comparación con límites observacionales (a verificar).
+- [x] Retícula discreta tipo Planck: paseo cuántico 1D (`lattice.py`) y retícula cúbica 3D con cotas observacionales (`lattice3d.py`). Pendiente: más modelos de retícula (p. ej. isótropos) y cotas de dispersión en otras partículas.
 - [x] Contrastar el estiramiento de supernovas con datos reales (Blondin et al. 2008). Pendiente: otras muestras (espectros o curvas de luz crudas).
 - [ ] Contactar al autor para discutir los veredictos documentados.
 - [ ] Añadir visualizador para la precesión de Mercurio (dilatación vs. precesión geométrica).
@@ -180,6 +182,8 @@ Solo se citan las que se pueden comprobar directamente en el código o en la lit
 | **Koch et al. (2007)** — *Phys. Rev. A* **76**, 042319 | Hamiltoniano *transmon*, niveles $E_n$, carga $E_C$ |
 | **Goldhaber et al. (2001)** — *Astrophys. J.* **558**, 359 | Estiramiento temporal de supernovas Ia $\propto (1+z)$ |
 | **Blondin et al. (2008)** — *Astrophys. J.* **682**, 724 | Confirmación del factor de dilatación temporal $1/(1+z)$ con envejecimiento espectral de 35 supernovas Ia |
+| **Vasileiou et al. (2013)** — *Phys. Rev. D* **87**, 122001 ([arXiv:1305.3463](https://arxiv.org/abs/1305.3463)) | Cotas de Fermi-LAT a la dispersión de la luz: $E_{QG,1}>7{,}6\,E_P$ y $E_{QG,2}>1{,}3\times10^{11}$ GeV |
+| **Eisele, Nevsky, Schiller (2009)** — *Phys. Rev. Lett.* **103**, 090401 | Isotropía de la velocidad de la luz a ~$10^{-17}$ |
 
 > **Nota**: Si una referencia no se puede comprobar en el código o en la literatura accesible, se ha omitido intencionadamente. No se inventan DOIs.
 
