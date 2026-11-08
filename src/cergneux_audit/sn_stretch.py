@@ -25,6 +25,32 @@ def load_csv(path):
     return tuple(np.array([float(r[c]) for r in rows]) for c in cols)
 
 
+def load_aging_csv(path):
+    """CSV de Blondin et al. 2008 (Tabla 3): sn,z,aging_rate,sigma,sample. Devuelve (z, tasa, σ, es_lejana)."""
+    with open(path, newline="", encoding="utf-8") as fh:
+        rows = list(csv.DictReader(fh))
+    z, rate, sig = (np.array([float(r[c]) for r in rows]) for c in ("z", "aging_rate", "sigma"))
+    return z, rate, sig, np.array([r["sample"] == "high" for r in rows])
+
+
+def chi2_aging(z, rate, sigma, b):
+    """χ² de la tasa de envejecimiento (Δt_reposo/Δt_obs) frente a (1+z)^(−b).
+
+    b = +1: estándar, tasa = 1/(1+z).  b = 0: sin dilatación (tired light).
+    b = −1: Ley de la Fila de Cergneux (TC pp. 34, 47): Tm = Tr/(1+z) ⇒ Tr/Tm = 1+z.
+    """
+    z, rate, sigma = (np.asarray(a, dtype=float) for a in (z, rate, sigma))
+    return float(np.sum(((rate - (1 + z) ** (-b)) / sigma) ** 2))
+
+
+def fit_b_aging(z, rate, sigma, grid=np.arange(-3.0, 5.0, 0.0005)):
+    """Mejor b en tasa = (1+z)^(−b) y error 1σ (Δχ² = 1), como en Blondin et al. 2008 §4."""
+    chi = np.array([chi2_aging(z, rate, sigma, b) for b in grid])
+    i = int(chi.argmin())
+    inside = grid[chi <= chi[i] + 1.0]
+    return float(grid[i]), float((inside.max() - inside.min()) / 2)
+
+
 def synthetic(b_true=1.0, n=40, noise=0.05, seed=0):
     """Datos SINTÉTICOS para probar la maquinaria. No son evidencia."""
     rng = np.random.default_rng(seed)

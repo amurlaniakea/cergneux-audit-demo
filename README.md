@@ -81,7 +81,7 @@ pip install -e ".[dev]"
 
 # 3. Ejecutar la suite de tests
 pytest -q
-# todos pasan (test_real_data_exponent se omite si no hay data/sn_stretch.csv)
+# todos los tests pasan
 ```
 
 > **Requisitos**: Python ≥ 3.9, `numpy`. Sin dependencias de red ni servicios externos.
@@ -113,7 +113,7 @@ Tabla resumida (fuente: [`docs/AUDITORIA.md`](docs/AUDITORIA.md)):
 | 4 | CMB en $r = r_s$, $\rho \to \infty$ (TC pp. 32, 48) | Un $\rho$ pequeño exige $r \gg r_s$; no hay regla distancia→$r$ | `test_small_redshift_needs_r_far_beyond_rs` |
 | 5 | $r_s$ de la masa bariónica = radio del universo observable (TC p. 43) | Identidad: $r_s$ de la masa crítica en la esfera de Hubble es $c/H_0$ | `test_rs_equals_hubble_radius_is_an_identity` |
 | 6 | Mercurio: 28,8 km por dilatación temporal (TC pp. 37-38) | La dilatación da ~8 km; 28,8 km es el desfase geométrico de la precesión de la RG | `test_mercury_paper_shift_is_the_precession_not_the_dilation` |
-| 7 | Supernovas más lejanas duran menos (TC pp. 46-47) | **Opuesto** al estiramiento $(1+z)$ medido; verificar con datos | `test_sn_stretch_directions_are_opposite` |
+| 7 | Supernovas más lejanas duran menos (TC pp. 34, 46-47) | **Descartada con datos reales** (Blondin et al. 2008, 35 SN): χ² ≈ 27 con 1/(1+z) frente a ≈ 796 con la Ley de la Fila | `test_real_data_contradict_ley_de_la_fila` |
 | 8 | Ley de la Energía: $\rho$ fotones por cada fotón emitido (TC pp. 30-31) | Aplicada a un cuerpo negro da emisividad $\rho^4$; FIRAS mide 1 | `test_energy_conservation_claim_gives_rho4_emissivity` |
 | 9 | $\Delta D$ constante (TC p. 10) y $\Delta D$ decreciente (TC p. 51) | Contradicción interna del texto | (documental) |
 | 10 | $dn/dt = (E_J \sin\phi + F)/\hbar$ (Túnel §4.1) | Signo incorrecto: $(F - E_J \sin\phi)/\hbar$ | `test_hamilton_sign_error_in_paper` |
@@ -155,7 +155,7 @@ def test_hamilton_sign_error_in_paper():
 
 ## Limitaciones
 
-- **Estiramiento de supernovas**: el test `test_sn_stretch_directions_are_opposite` muestra que la Ley de la Fila ($1/(1+z)$) predice lo opuesto a lo medido ($(1+z)$), pero **no se ha contrastado con datos reales (Pantheon+)**. Está marcado como *a verificar con datos*.
+- **Datos de supernovas**: el contraste usa envejecimiento espectral (Blondin et al. 2008, Tabla 3), transcrito a mano y validado reproduciendo los números publicados del artículo. Es una sola muestra de 35 supernovas; no se usa Pantheon+ porque SALT2 ya asume la dilatación (1+z) y el ajuste sería circular.
 - **Alcance**: es una **demo/prototipo (v0.1)**, no una refutación completa. Solo cubre las ecuaciones y afirmaciones que se pudieron mapear a código comprobable.
 - **Fuentes**: los PDFs originales **no se incluyen** en el repo (son obra de su autor); solo se citan con número de página.
 
@@ -164,7 +164,7 @@ def test_hamilton_sign_error_in_paper():
 ## Hoja de ruta
 
 - [x] Retícula discreta tipo Planck como paseo cuántico 1D (`lattice.py`). Pendiente: versión 3D (anisotropía) y comparación con límites observacionales (a verificar).
-- [ ] Contrastar el estiramiento de supernovas con datos reales (Pantheon+ / Union3).
+- [x] Contrastar el estiramiento de supernovas con datos reales (Blondin et al. 2008). Pendiente: otras muestras (espectros o curvas de luz crudas).
 - [ ] Contactar al autor para discutir los veredictos documentados.
 - [ ] Añadir visualizador para la precesión de Mercurio (dilatación vs. precesión geométrica).
 
@@ -179,7 +179,7 @@ Solo se citan las que se pueden comprobar directamente en el código o en la lit
 | **Devoret, Martinis, Clarke (1985)** — *Phys. Rev. Lett.* **55**, 1908 | Tasa de escape con disipación, potencial washboard, meseta cuántica |
 | **Koch et al. (2007)** — *Phys. Rev. A* **76**, 042319 | Hamiltoniano *transmon*, niveles $E_n$, carga $E_C$ |
 | **Goldhaber et al. (2001)** — *Astrophys. J.* **558**, 359 | Estiramiento temporal de supernovas Ia $\propto (1+z)$ |
-| **Blondin et al. (2008)** — *Astrophys. J.* **682**, 724 | Confirmación del estiramiento $(1+z)$ en curvas de luz |
+| **Blondin et al. (2008)** — *Astrophys. J.* **682**, 724 | Confirmación del factor de dilatación temporal $1/(1+z)$ con envejecimiento espectral de 35 supernovas Ia |
 
 > **Nota**: Si una referencia no se puede comprobar en el código o en la literatura accesible, se ha omitido intencionadamente. No se inventan DOIs.
 

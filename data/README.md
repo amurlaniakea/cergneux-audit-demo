@@ -1,19 +1,14 @@
-# Datos reales de estiramiento de supernovas Ia
+# Datos
 
-Aquí va `sn_stretch.csv` cuando se disponga de datos reales. Sin ese archivo, `test_real_data_exponent` se omite.
+## `blondin2008_table3.csv`
+Tabla 3 de Blondin et al. 2008, *Time Dilation in Type Ia Supernova Spectra at High Redshift*, ApJ 682, 724
+([arXiv:0804.3595](https://arxiv.org/abs/0804.3595)): 22 supernovas Ia cercanas y 13 lejanas (0,28 ≤ z ≤ 0,62).
 
-Formato (con cabecera):
+- `aging_rate`: pendiente de Δt_reposo frente a Δt_observado, medida con espectros. Esperado: 1/(1+z).
+- `sigma`: error de `aging_rate`. `sample`: `low` (z < 0,04) o `high` (z > 0,2).
+- Transcrita a mano desde el PDF del artículo. Los tests la validan reproduciendo sus resultados publicados
+  (χ² = 27,0 con 35 gl para 1/(1+z); χ² = 150,3 sin dilatación; b = 0,97 ± 0,10).
 
-```
-z,width_ratio,sigma
-0.35,1.38,0.06
-```
-
-- `width_ratio`: anchura **observada** de la curva de luz dividida por la anchura **en reposo** de una referencia local.
-- `sigma`: error de `width_ratio`.
-- Los números de arriba son un ejemplo de formato, no datos.
-
-Advertencia: no sirve el parámetro `x1` de SALT2 (p. ej. en Pantheon+): SALT2 ya modela las curvas en el sistema en reposo
-suponiendo la dilatación (1+z), así que ajustarlo frente a z sería circular. Hacen falta anchuras en el sistema del
-observador (Goldhaber et al. 2001, ApJ 558, 359) o envejecimiento espectral (Blondin et al. 2008, ApJ 682, 724).
-Anota en el CSV la fuente y comprueba cada cifra contra la tabla del artículo antes de usarla.
+Por qué espectros y no parámetros de curva de luz como x1 de SALT2 (Pantheon+): SALT2 ya modela las curvas en el
+sistema en reposo suponiendo la dilatación (1+z), así que ajustarlo frente a z sería circular. Blondin et al. explican
+además que la anchura de la curva de luz se confunde con la luminosidad intrínseca (relación de Phillips).

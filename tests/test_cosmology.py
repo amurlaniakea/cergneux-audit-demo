@@ -18,8 +18,6 @@ def test_paper_mass_is_the_critical_mass_within_10_percent():
     assert rs == pytest.approx(cos.hubble_radius(67.4), rel=0.10)
 
 
-@pytest.mark.audit(id=7, ref='TC pp. 46-47', claim='Las supernovas más lejanas duran menos (Tm = Tr/(1+z))', verdict='a-verificar',
-                   note='Opuesto al estiramiento (1+z) de la literatura. Ajuste de exponente listo (b=+1 estándar, b=−1 Fila); faltan datos reales en data/')
 def test_sn_stretch_directions_are_opposite():
     z = 1.0
     assert cos.sn_stretch_standard(z) == pytest.approx(2.0)
