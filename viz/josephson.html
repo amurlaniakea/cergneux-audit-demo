@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Josephson: estándar frente a Cergneux</title><link rel="stylesheet" href="common.css"></head>
+<body><main>
+<h1>Unión Josephson: potencial washboard, túnel y la predicción de T₂</h1>
+<p class="lead">Física estándar de la tasa de escape (Devoret, Martinis, Clarke 1985) con los parámetros que puedes mover. Abajo, la predicción del Test 1 del PDF de Cergneux contra la escala real de un qubit.</p>
+
+<div class="panel">
+<div class="row">
+<label>Sesgo I/I₀ <b id="vS"></b><input id="s" type="range" min="0.80" max="0.995" step="0.001" value="0.97"></label>
+<label>I₀ (µA) <b id="vI"></b><input id="i0" type="range" min="1" max="20" step="0.1" value="9.489"></label>
+<label>C (pF) <b id="vC"></b><input id="c" type="range" min="1" max="20" step="0.05" value="6.35"></label>
+<label>Q de disipación <b id="vQ"></b><input id="q" type="range" min="2" max="100" step="1" value="30"></label>
+</div>
+<canvas id="wb" width="900" height="300" role="img" aria-label="Potencial washboard"></canvas>
+<p class="num" id="r1"></p>
+</div>
+
+<div class="panel">
+<div class="legend"><span><i style="background:var(--bad)"></i>Térmica</span><span><i style="background:var(--ok)"></i>Cuántica (no depende de T)</span><span><i style="background:var(--ref)"></i>Tasa observable</span></div>
+<canvas id="gt" width="900" height="300" role="img" aria-label="Tasa de escape frente a temperatura"></canvas>
+<p>La meseta a baja temperatura aparece sin postular tiempo discreto: es el túnel de un oscilador con disipación.</p>
+</div>
+
+<h2>Predicción de Cergneux (Test 1): T₂ ~ τₚ·2π/(ΔE/ħ)</h2>
+<div class="panel">
+<div class="row"><label>Frecuencia del qubit f₀₁ (GHz) <b id="vF"></b><input id="f" type="range" min="0.5" max="12" step="0.1" value="5"></label></div>
+<p class="num" id="t2"></p>
+<div class="verdict" id="vd"></div>
+</div>
+<script>
+const PHI0=2.067833848e-15,HB=1.054571817e-34,KB=1.380649e-23,TP=5.391247e-44;
+const $=id=>document.getElementById(id);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function P(){return{s:+$('s').value,i0:$('i0').value*1e-6,c:$('c').value*1e-12,q:+$('q').value,f:$('f').value*1e9}}
+function phys(p){
+ const du=2*Math.SQRT2*p.i0*PHI0/(3*Math.PI)*Math.pow(1-p.s,1.5);
+ const wp=Math.pow(2,.25)*Math.sqrt(2*Math.PI*p.i0/(PHI0*p.c))*Math.pow(1-p.s,.25);
+ const x=du/(HB*wp);
+ const tcr=HB*wp/(2*Math.PI*KB)*(Math.sqrt(1+1/(4*p.q*p.q))-1/(2*p.q));
+ const lq=Math.log10(Math.sqrt(120*Math.PI*7.2*x)*wp/(2*Math.PI))-7.2*x*(1+.87/p.q)/Math.LN10;
+ return{du,wp,x,tcr,lq};
+}
+function lt(p,ph,T){return Math.log10(ph.wp/(2*Math.PI))-ph.du/(KB*T)/Math.LN10}
+function axes(g,W,H,m){g.strokeStyle=css('--line');g.lineWidth=1;g.strokeRect(m.l,m.t,W-m.l-m.r,H-m.t-m.b)}
+function drawWB(p,ph){
+ const cv=$('wb'),g=cv.getContext('2d'),W=cv.width,H=cv.height,m={l:46,r:14,t:14,b:30};
+ g.clearRect(0,0,W,H);axes(g,W,H,m);
+ const a=-2*Math.PI,b=4*Math.PI,U=f=>-Math.cos(f)-p.s*f;
+ let lo=1e9,hi=-1e9;for(let f=a;f<=b;f+=.05){const u=U(f);lo=Math.min(lo,u);hi=Math.max(hi,u)}
+ const X=f=>m.l+(f-a)/(b-a)*(W-m.l-m.r),Y=u=>H-m.b-(u-lo)/(hi-lo)*(H-m.t-m.b);
+ g.strokeStyle=css('--ref');g.lineWidth=2;g.beginPath();
+ for(let f=a;f<=b;f+=.02){const x=X(f),y=Y(U(f));f===a?g.moveTo(x,y):g.lineTo(x,y)}g.stroke();
+ const f0=Math.asin(p.s),f1=Math.PI-f0;
+ g.strokeStyle=css('--bad');g.setLineDash([5,4]);g.beginPath();g.moveTo(X(f0),Y(U(f0)));g.lineTo(X(f1),Y(U(f0)));g.stroke();g.setLineDash([]);
+ g.fillStyle=css('--bad');g.beginPath();g.arc(X(f0),Y(U(f0)),4,0,7);g.fill();
+ g.fillStyle=css('--mute');g.font='13px system-ui';g.fillText('φ',W-m.r-10,H-8);g.fillText('U(φ)/E_J',4,m.t+10);
+ g.fillStyle=css('--bad');g.fillText('ΔU',X((f0+f1)/2)-8,Y(U(f0))-6);
+}
+function drawGT(p,ph){
+ const cv=$('gt'),g=cv.getContext('2d'),W=cv.width,H=cv.height,m={l:56,r:14,t:14,b:30};
+ g.clearRect(0,0,W,H);axes(g,W,H,m);
+ const Tmin=Math.max(ph.tcr*.05,1e-3),Tmax=ph.tcr*6,N=200,pts=[];
+ for(let i=0;i<=N;i++){const T=Tmin*Math.pow(Tmax/Tmin,i/N),t=lt(p,ph,T);pts.push({T,t,q:ph.lq,o:Math.max(t,ph.lq)})}
+ let lo=Math.min(ph.lq,pts[0].t)-1,hi=Math.max(...pts.map(r=>r.o))+1;lo=Math.max(lo,hi-60);
+ const X=T=>m.l+Math.log(T/Tmin)/Math.log(Tmax/Tmin)*(W-m.l-m.r),Y=v=>H-m.b-(Math.min(Math.max(v,lo),hi)-lo)/(hi-lo)*(H-m.t-m.b);
+ const line=(k,col,w)=>{g.strokeStyle=css(col);g.lineWidth=w;g.beginPath();pts.forEach((r,i)=>{const x=X(r.T),y=Y(r[k]);i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke()};
+ line('t','--bad',1.5);line('q','--ok',1.5);line('o','--ref',2.5);
+ g.setLineDash([4,4]);g.strokeStyle=css('--mute');g.beginPath();g.moveTo(X(ph.tcr),m.t);g.lineTo(X(ph.tcr),H-m.b);g.stroke();g.setLineDash([]);
+ g.fillStyle=css('--mute');g.font='13px system-ui';g.fillText('T_cr',X(ph.tcr)+4,m.t+12);g.fillText('log₁₀ Γ (s⁻¹)',4,m.t+10);g.fillText('T (K, escala log)',W-130,H-8);
+}
+function upd(){
+ const p=P(),ph=phys(p);
+ $('vS').textContent=p.s.toFixed(3);$('vI').textContent=(p.i0*1e6).toFixed(2);$('vC').textContent=(p.c*1e12).toFixed(2);$('vQ').textContent=p.q;$('vF').textContent=(p.f/1e9).toFixed(1);
+ $('r1').textContent=`ΔU/ħω_p = ${ph.x.toFixed(2)}   ω_p/2π = ${(ph.wp/2/Math.PI/1e9).toFixed(2)} GHz   T_cr = ${(ph.tcr*1e3).toFixed(1)} mK   log₁₀Γ_q = ${ph.lq.toFixed(1)}`;
+ drawWB(p,ph);drawGT(p,ph);
+ const t2=TP/p.f,ratio=Math.log10(100e-6/t2);
+ $('t2').textContent=`T₂ (Cergneux) = τₚ/f₀₁ = ${t2.toExponential(2)} s     T₂ típico de un transmon ≈ 1e-4 s`;
+ $('vd').innerHTML=`La predicción queda ${ratio.toFixed(0)} órdenes de magnitud por debajo de lo medido. Con τₚ = 5,39e-44 s no hay frecuencia de qubit que la acerque.`;
+}
+document.querySelectorAll('input').forEach(e=>e.addEventListener('input',upd));upd();
+</script></main></body></html>
