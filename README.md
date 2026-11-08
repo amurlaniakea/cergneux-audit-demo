@@ -80,7 +80,7 @@ pip install -e ".[dev]"
 
 # 3. Ejecutar la suite de tests
 pytest -q
-# 18 passed
+# 22 passed
 ```
 
 > **Requisitos**: Python ≥ 3.9, `numpy`. Sin dependencias de red ni servicios externos.
