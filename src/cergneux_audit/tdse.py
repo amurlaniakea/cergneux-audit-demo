@@ -1,5 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pedro Sordo Martínez <amurlaniakea@gmail.com>
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (C) Pedro Sordo Martínez
 """Paquete de ondas contra barrera rectangular (ħ = m = 1), split-step Fourier."""
 import numpy as np
 

@@ -1,5 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pedro Sordo Martínez <amurlaniakea@gmail.com>
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (C) Pedro Sordo Martínez
 """Ecuaciones de «Teoría del Tiempo Cuántico» (Cergneux, ene. 2025), con página del PDF."""
 import math
 import numpy as np

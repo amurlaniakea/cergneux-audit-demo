@@ -1,5 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Pedro Sordo Martínez <amurlaniakea@gmail.com>
 # SPDX-License-Identifier: AGPL-3.0-or-later
-# Copyright (C) Pedro Sordo Martínez
 """Contraste cosmológico (pp. 43-51 del PDF de la Teoría del Tiempo Cuántico)."""
 import numpy as np
 from .constants import C, G, MPC, KB, H

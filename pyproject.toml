@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Auditoría ejecutable de las ecuaciones de R. J. Cergneux (Tiempo Cuántico y túnel Josephson) contra la física estándar"
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "AGPL-3.0-or-later" }
+license = "AGPL-3.0-or-later"
 authors = [{ name = "Pedro Sordo Martínez" }]
 dependencies = ["numpy>=1.22"]
 
