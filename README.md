@@ -2,7 +2,7 @@
 
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/License-AGPL--3.0--or--later-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-18%20passed-brightgreen.svg)](https://github.com/amurlaniakea/cergneux-audit-demo/actions)
+[![CI](https://github.com/amurlaniakea/cergneux-audit-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/amurlaniakea/cergneux-audit-demo/actions/workflows/ci.yml)
 
 > **Demo / prototipo: v0.1, en desarrollo**
 
@@ -94,7 +94,7 @@ Dos páginas HTML autocontenidas (sin dependencias, se abren directamente en el 
 | Visualizador | Qué muestra | Qué mover |
 |--------------|-------------|-----------|
 | [`viz/josephson.html`](https://amurlaniakea.github.io/cergneux-audit-demo/viz/josephson.html) | Potencial *washboard*, barrera $\Delta U$, frecuencia de plasma $\omega_p$, tasa de escape térmica vs. cuántica, y la predicción de $T_2$ del Test 1 contra la escala real de un *transmon* | Sesgo $I/I_0$, corriente crítica $I_0$, capacitancia $C$, factor de calidad $Q$, frecuencia del qubit $f_{01}$ |
-| [`viz/redshift.html`](https://amurlaniakea.github.io/cergneux-audit-demo/viz/redshift.html) | Tres paneles: (1) duración observada de supernovas Ia: estándar $(1+z)$ vs. Ley de la Fila $1/(1+z)$; (2) relación $r/r_s$ para un $\rho = 1+z$ dado; (3) emisividad efectiva $\rho^4$ si se conserva la energía por bandas | $\rho = 1+z$ (panel 2 y 3) |
+| [`viz/redshift.html`](https://amurlaniakea.github.io/cergneux-audit-demo/viz/redshift.html) | Tres paneles: (1) duración observada de supernovas Ia: estándar $(1+z)$ vs. Ley de la Fila $1/(1+z)$; (2) $(r-r_s)/r_s$ en escala log para un $\rho = 1+z$ dado; (3) emisividad efectiva $\rho^4$ si se conserva la energía por bandas | $\rho = 1+z$ (panel 2 y 3) |
 
 > **Nota**: Los visualizadores no se renderizan en la vista de GitHub. Los enlaces arriba apuntan a **GitHub Pages** (rama `main`, raíz del repo). Si el enlace no funciona, abre el archivo local `viz/josephson.html` o `viz/redshift.html` en tu navegador.
 
@@ -125,46 +125,23 @@ Tabla resumida (fuente: [`docs/AUDITORIA.md`](docs/AUDITORIA.md)):
 
 ## Cómo leer un test como evidencia
 
-Ejemplo comentado: **test del signo del Hamiltoniano** (`tests/test_josephson.py`)
+Ejemplo literal: **test_hamilton_sign_error_in_paper** (`tests/test_josephson.py`)
 
 ```python
-# SPDX-FileCopyrightText: 2026 Pedro Sordo Martínez <amurlaniakea@gmail.com>
-# SPDX-License-Identifier: AGPL-3.0-or-later
-import numpy as np
-from cergneux_audit import josephson as j
-
 def test_hamilton_sign_error_in_paper():
-    """
-    El PDF (Túnel §4.1, ecuación 28) escribe:
-        dn/dt = (E_J sin φ + F) / ħ
-
-    La física estándar (Devoret-Martinis-Clarke 1985, Koch et al. 2007) da:
-        dn/dt = (F - E_J sin φ) / ħ
-
-    Este test verifica que el signo del término de Josephson es negativo
-    cuando la fuerza externa F es cero (oscilación libre en el pozo).
-    """
-    # Parámetros típicos de transmon
-    EJ = 20e9 * 2 * np.pi * 1.054571817e-34  # J
-    EC = 200e6 * 2 * np.pi * 1.054571817e-34  # J
-
-    # Fuerza externa nula → el signo del término E_J determina la dirección
-    # del flujo de fase. Con signo + (PDF) la fase acelera hacia +∞;
-    # con signo - (estándar) oscila en el pozo.
-    dn_dt_paper = j.dn_dt_paper_sign(phi=0.1, EJ=EJ, F=0.0)
-    dn_dt_standard = j.dn_dt_standard(phi=0.1, EJ=EJ, F=0.0)
-
-    # El signo debe ser opuesto
-    assert np.sign(dn_dt_paper) != np.sign(dn_dt_standard)
-    # El estándar debe ser restaurador (negativo para phi > 0)
-    assert dn_dt_standard < 0
+    phi, ej, f = 0.3, 1.0, 0.2
+    assert j.dn_dt_standard(phi, ej, f, hbar=1) == pytest.approx(f - ej * np.sin(phi))
+    assert j.dn_dt_paper(phi, ej, f, hbar=1) != pytest.approx(j.dn_dt_standard(phi, ej, f, hbar=1))
 ```
 
+**Qué hacen los asserts reales**:
+1. `assert j.dn_dt_standard(...) == pytest.approx(f - ej * np.sin(phi))` → la versión estándar coincide con la fórmula analítica $F - E_J \sin\phi$.
+2. `assert j.dn_dt_paper(...) != pytest.approx(j.dn_dt_standard(...))` → la versión del PDF da un resultado **distinto** al estándar (signo opuesto en el término de Josephson).
+
 **Claves para leer cualquier test del repo**:
-1. **Docstring** → cita la ecuación del PDF (sección/página) y la referencia estándar.
-2. **Parámetros** → valores físicos reales (no *toy*), con unidades SI.
-3. **Asserts** → contraste directo, sin umbrales *ad hoc*; el fallo es binario.
-4. **Resultado** → el nombre del test describe el veredicto (`*_sign_error_*`, `*_is_absurdly_short`, `*_matches_analytic`).
+1. **Parámetros adimensionales** → el test usa $\phi, E_J, F$ normalizados ($\hbar=1$); la física está en la estructura, no en las unidades.
+2. **Asserts binarios** → igualdad/desigualdad directa con `pytest.approx`; no hay umbrales *ad hoc*.
+3. **Nombre del test** → describe el veredicto (`*_sign_error_*`, `*_is_absurdly_short`, `*_matches_analytic`).
 
 ---
 
@@ -189,12 +166,12 @@ def test_hamilton_sign_error_in_paper():
 
 Solo se citan las que se pueden comprobar directamente en el código o en la literatura:
 
-| Referencia | Uso en el repo | Verificable |
-|------------|----------------|-------------|
-| **Devoret, Martinis, Clarke (1985)** — *Phys. Rev. Lett.* **55**, 1906 | Tasa de escape con disipación, potencial washboard, meseta cuántica | ✅ Ecuaciones en `josephson.py` |
-| **Koch et al. (2007)** — *Phys. Rev. A* **76**, 042319 | Hamiltoniano *transmon*, niveles $E_n$, carga $E_C$ | ✅ Implementado en `josephson.py` |
-| **Goldhaber et al. (2001)** — *Astrophys. J.* **558**, 359 | Estiramiento temporal de supernovas Ia $\propto (1+z)$ | ✅ Citado en `cosmology.py` y `viz/redshift.html` |
-| **Blondin et al. (2008)** — *Astrophys. J.* **682**, 724 | Confirmación del estiramiento $(1+z)$ en curvas de luz | ✅ Citado en `cosmology.py` y `viz/redshift.html` |
+| Referencia | Uso en el repo |
+|------------|----------------|
+| **Devoret, Martinis, Clarke (1985)** — *Phys. Rev. Lett.* **55**, 1908 | Tasa de escape con disipación, potencial washboard, meseta cuántica |
+| **Koch et al. (2007)** — *Phys. Rev. A* **76**, 042319 | Hamiltoniano *transmon*, niveles $E_n$, carga $E_C$ |
+| **Goldhaber et al. (2001)** — *Astrophys. J.* **558**, 359 | Estiramiento temporal de supernovas Ia $\propto (1+z)$ |
+| **Blondin et al. (2008)** — *Astrophys. J.* **682**, 724 | Confirmación del estiramiento $(1+z)$ en curvas de luz |
 
 > **Nota**: Si una referencia no se puede comprobar en el código o en la literatura accesible, se ha omitido intencionadamente. No se inventan DOIs.
 
@@ -206,6 +183,6 @@ Solo se citan las que se pueden comprobar directamente en el código o en la lit
 - **Copyright**: © 2026 **Pedro Sordo Martínez** — autor del código de auditoría, tests y visualizadores.
 - **Ideas y ecuaciones de los PDFs**: pertenecen a **Ricardo J. Cergneux**; este repo solo las cita con página y las contrasta.
 
-**Contacto**: abre un *Issue* en este repositorio. No se incluyen correos ni datos personales en el README.
+**Contacto**: abre un *Issue* en este repositorio.
 
 ---
