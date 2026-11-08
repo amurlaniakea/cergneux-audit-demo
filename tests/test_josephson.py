@@ -16,11 +16,17 @@ def test_transmon_anharmonicity_negative_and_small():
 
 
 @pytest.mark.audit(id=10, ref='Túnel §4.1', claim='dn/dt = (E_J sin φ + F)/ħ', verdict='discrepa',
-                   note='Signo incorrecto: (F − E_J sin φ)/ħ')
+                   note='Contradice su propia ecuación dn/dt = −(1/ħ)∂H/∂φ: el signo correcto es (F − E_J sin φ)/ħ')
 def test_hamilton_sign_error_in_paper():
-    phi, ej, f = 0.3, 1.0, 0.2
-    assert j.dn_dt_standard(phi, ej, f, hbar=1) == pytest.approx(f - ej * np.sin(phi))
-    assert j.dn_dt_paper(phi, ej, f, hbar=1) != pytest.approx(j.dn_dt_standard(phi, ej, f, hbar=1))
+    phi, ej, f, h = 0.3, 1.0, 0.2, 1e-6
+    energy = lambda p: -ej * np.cos(p) - f * p                      # parte de H que depende de φ
+    exact = -(energy(phi + h) - energy(phi - h)) / (2 * h)           # −∂H/∂φ numérico (ħ = 1)
+    assert j.dn_dt_standard(phi, ej, f, hbar=1) == pytest.approx(exact, rel=1e-6)
+    assert j.dn_dt_paper(phi, ej, f, hbar=1) != pytest.approx(exact, rel=1e-6)
+    # sin sesgo (F = 0) el PDF da exactamente el signo contrario
+    std0, paper0 = j.dn_dt_standard(phi, ej, 0.0, hbar=1), j.dn_dt_paper(phi, ej, 0.0, hbar=1)
+    assert std0 < 0 < paper0
+    assert paper0 == pytest.approx(-std0)
 
 
 @pytest.mark.audit(id=12, ref='Túnel §7', claim='La meseta de la tasa de escape a baja T prueba tiempo discreto', verdict='discrepa',

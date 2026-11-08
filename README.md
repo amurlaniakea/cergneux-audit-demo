@@ -80,7 +80,7 @@ pip install -e ".[dev]"
 
 # 3. Ejecutar la suite de tests
 pytest -q
-# 22 passed
+# todos pasan (test_real_data_exponent se omite si no hay data/sn_stretch.csv)
 ```
 
 > **Requisitos**: Python ≥ 3.9, `numpy`. Sin dependencias de red ni servicios externos.
@@ -129,18 +129,25 @@ Ejemplo literal: **test_hamilton_sign_error_in_paper** (`tests/test_josephson.py
 
 ```python
 def test_hamilton_sign_error_in_paper():
-    phi, ej, f = 0.3, 1.0, 0.2
-    assert j.dn_dt_standard(phi, ej, f, hbar=1) == pytest.approx(f - ej * np.sin(phi))
-    assert j.dn_dt_paper(phi, ej, f, hbar=1) != pytest.approx(j.dn_dt_standard(phi, ej, f, hbar=1))
+    phi, ej, f, h = 0.3, 1.0, 0.2, 1e-6
+    energy = lambda p: -ej * np.cos(p) - f * p                      # parte de H que depende de φ
+    exact = -(energy(phi + h) - energy(phi - h)) / (2 * h)           # −∂H/∂φ numérico (ħ = 1)
+    assert j.dn_dt_standard(phi, ej, f, hbar=1) == pytest.approx(exact, rel=1e-6)
+    assert j.dn_dt_paper(phi, ej, f, hbar=1) != pytest.approx(exact, rel=1e-6)
+    # sin sesgo (F = 0) el PDF da exactamente el signo contrario
+    std0, paper0 = j.dn_dt_standard(phi, ej, 0.0, hbar=1), j.dn_dt_paper(phi, ej, 0.0, hbar=1)
+    assert std0 < 0 < paper0
+    assert paper0 == pytest.approx(-std0)
 ```
 
 **Qué hacen los asserts reales**:
-1. `assert j.dn_dt_standard(...) == pytest.approx(f - ej * np.sin(phi))` → la versión estándar coincide con la fórmula analítica $F - E_J \sin\phi$.
-2. `assert j.dn_dt_paper(...) != pytest.approx(j.dn_dt_standard(...))` → la versión del PDF da un resultado **distinto** al estándar (signo opuesto en el término de Josephson).
+1. La versión estándar coincide con $-\partial H/\partial\phi$ calculado por **derivada numérica**, independiente de la fórmula escrita en el código.
+2. La versión del PDF **no** coincide con esa derivada.
+3. Sin sesgo ($F=0$) la del PDF tiene exactamente el signo contrario. El PDF contradice así su propia ecuación $dn/dt = -\frac{1}{\hbar}\partial H/\partial\phi$.
 
 **Claves para leer cualquier test del repo**:
 1. **Parámetros adimensionales** → el test usa $\phi, E_J, F$ normalizados ($\hbar=1$); la física está en la estructura, no en las unidades.
-2. **Asserts binarios** → igualdad/desigualdad directa con `pytest.approx`; no hay umbrales *ad hoc*.
+2. **Asserts explícitos** → igualdad/desigualdad con `pytest.approx` o rangos declarados en el propio test (algunos usan umbrales, p. ej. Mercurio o T₂); léelos antes de fiarte del veredicto.
 3. **Nombre del test** → describe el veredicto (`*_sign_error_*`, `*_is_absurdly_short`, `*_matches_analytic`).
 
 ---
