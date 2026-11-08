@@ -179,7 +179,7 @@ Solo se citan las que se pueden comprobar directamente en el código o en la lit
 
 ## Licencia y créditos
 
-- **Código**: licenciado bajo **AGPL-3.0-or-later** — ver [`LICENSE`](LICENSE) (texto oficial FSF, 661 líneas).
+- **Código**: licenciado bajo **AGPL-3.0-or-later** — ver [`LICENSE`](LICENSE).
 - **Copyright**: © 2026 **Pedro Sordo Martínez** — autor del código de auditoría, tests y visualizadores.
 - **Ideas y ecuaciones de los PDFs**: pertenecen a **Ricardo J. Cergneux**; este repo solo las cita con página y las contrasta.
 
