@@ -183,6 +183,6 @@ Solo se citan las que se pueden comprobar directamente en el código o en la lit
 - **Copyright**: © 2026 **Pedro Sordo Martínez** — autor del código de auditoría, tests y visualizadores.
 - **Ideas y ecuaciones de los PDFs**: pertenecen a **Ricardo J. Cergneux**; este repo solo las cita con página y las contrasta.
 
-**Contacto**: abre un *Issue* en este repositorio.
+**Contacto**: **Pedro Sordo Martínez** — amurlaniakea@gmail.com
 
 ---
