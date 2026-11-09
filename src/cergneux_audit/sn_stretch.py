@@ -51,6 +51,54 @@ def fit_b_aging(z, rate, sigma, grid=np.arange(-3.0, 5.0, 0.0005)):
     return float(grid[i]), float((inside.max() - inside.min()) / 2)
 
 
+def load_goldhaber_csv(path):
+    """Tablas 1-2 de Goldhaber et al. 2001: devuelve (z, w, σ_w) de las SN usadas en su ajuste (58)."""
+    with open(path, newline="", encoding="utf-8") as fh:
+        rows = [r for r in csv.DictReader(fh) if r["used_in_fit"] == "1"]
+    return tuple(np.array([float(r[c]) for r in rows]) for c in ("z", "w", "sigma_w"))
+
+
+def _linfit(x, y, err):
+    wgt = 1.0 / err**2
+    a = np.vstack([np.ones_like(x), x]).T
+    cov = np.linalg.inv(a.T @ (a * wgt[:, None]))
+    par = cov @ (a.T @ (wgt * y))
+    return par, np.sqrt(np.diag(cov)), float(np.sum(wgt * (y - a @ par) ** 2))
+
+
+def intrinsic_scatter(x, y, base_err, scale=1.0):
+    """Dispersión intrínseca δ (en cuadratura, ×scale) que lleva χ²/gl a 1 en un ajuste lineal."""
+    lo, hi = 0.0, 1.0
+    for _ in range(80):
+        d = (lo + hi) / 2
+        chi = _linfit(x, y, np.sqrt(base_err**2 + (d * scale) ** 2))[2]
+        lo, hi = (d, hi) if chi / (len(x) - 2) > 1 else (lo, d)
+    return (lo + hi) / 2
+
+
+def fit_width_slope(z, w, sigma_w):
+    """Pendiente dw/dz de w = a + b·z con dispersión intrínseca δ_s·(1+z), como Goldhaber et al. 2001 §IV."""
+    d = intrinsic_scatter(z, w, sigma_w, scale=1 + z)
+    par, err, _ = _linfit(z, w, np.sqrt(sigma_w**2 + (d * (1 + z)) ** 2))
+    return float(par[1]), float(err[1]), float(d)
+
+
+def fit_width_exponent(z, w, sigma_w):
+    """Ajusta ln w = a + b·ln(1+z). Estándar b = +1 (w = s(1+z)); Ley de la Fila b = −1. Devuelve (b, err, δ)."""
+    x, y, base = np.log1p(z), np.log(w), sigma_w / w
+    d = intrinsic_scatter(x, y, base)
+    par, err, _ = _linfit(x, y, np.sqrt(base**2 + d**2))
+    return float(par[1]), float(err[1]), float(d)
+
+
+def chi2_width_fixed_b(z, w, sigma_w, b, delta):
+    """χ² de ln w = a + b·ln(1+z) con b fijo y normalización a libre (misma dispersión δ)."""
+    x, y = np.log1p(z), np.log(w)
+    e = np.sqrt((sigma_w / w) ** 2 + delta**2)
+    a = np.sum((y - b * x) / e**2) / np.sum(1 / e**2)
+    return float(np.sum(((y - a - b * x) / e) ** 2))
+
+
 def synthetic(b_true=1.0, n=40, noise=0.05, seed=0):
     """Datos SINTÉTICOS para probar la maquinaria. No son evidencia."""
     rng = np.random.default_rng(seed)

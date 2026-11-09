@@ -4,7 +4,7 @@
 
 «TC» = *Teoría del Tiempo Cuántico* (ene. 2025); «Túnel» = *Reinterpretación del efecto túnel* (dic. 2025).
 
-**Resumen:** ℹ️ Identidad: 2 · ✅ Coincide: 4 · ❌ Discrepa: 9 · 📄 Documental: 2 · ⚠️ A verificar: 1
+**Resumen:** ℹ️ Identidad: 2 · ✅ Coincide: 4 · ❌ Discrepa: 10 · 📄 Documental: 2 · ⚠️ A verificar: 1
 
 | # | Afirmación | Página | Veredicto | Detalle | Test |
 |---|---|---|---|---|---|
@@ -26,5 +26,6 @@
 | 16 | Una retícula de Planck es compatible con la invariancia de Lorentz macroscópica | TC pp. 4-6, 12 | ⚠️ A verificar | Modelo 1D: la desviación escala como (E/E_P)² y es ínfima a energías accesibles; no prueba la anisotropía 3D ni la simultaneidad universal | `test_lattice_lorentz_violation_scales_as_lambda_squared` |
 | 17 | La luz avanza una celda de Planck por tick en cualquier dirección de una retícula cúbica (c isótropa) | TC pp. 4-6 | ❌ Discrepa | Literal en retícula cúbica la velocidad varía un 42 % entre ejes y diagonales (1/√3 a 1, o 1 a √3); las pruebas de isotropía de c llegan a ~1e-17 | `test_cubic_lattice_light_is_anisotropic_at_order_one` |
 | 18 | Una retícula espacial de Planck es compatible con las cotas de dispersión de la luz | TC pp. 4-6 | ✅ Coincide | Dispersión cuadrática v≈1−(ka)²/8 ⇒ E_QG,2≈3,5 E_P ≈ 4e19 GeV, muy por encima de la cota de Fermi-LAT (1,3e11 GeV): compatible con las cotas y no detectable hoy | `test_spatial_lattice_dispersion_is_far_above_grb_bound` |
+| 19 | Las curvas de luz de supernovas lejanas se ven más estrechas (w = s/(1+z)) | TC pp. 34, 46-47 | ❌ Discrepa | Muestra independiente (Goldhaber et al. 2001, 58 SN, curvas de luz): ln w = a + b·ln(1+z) da b≈1,08±0,07; la Fila exige b=−1 (>25σ), χ²≈857 frente a ≈57 | `test_goldhaber_light_curve_widths_contradict_fila` |
 
 El veredicto es la tesis del autor del repo; que el test pase significa que la evidencia es reproducible.
