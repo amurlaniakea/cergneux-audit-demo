@@ -18,18 +18,25 @@ def planck_energy():
     return float(np.sqrt(HBAR * C**5 / G))
 
 
+def _sin_omega(k, theta):
+    """sin ω = √(sin²θ + cos²θ sin²k): estable para k, θ pequeños (evita 1 − cos² )."""
+    return np.sqrt(np.sin(theta) ** 2 + (np.cos(theta) * np.sin(k)) ** 2)
+
+
 def dispersion(k, theta):
-    """ω(k) exacto: cos ω = cosθ cos k (ω ≥ 0)."""
-    return np.arccos(np.clip(np.cos(theta) * np.cos(k), -1.0, 1.0))
+    """ω(k) exacto: cos ω = cosθ cos k (ω ∈ [0, π]); atan2 evita la pérdida de precisión de arccos."""
+    k = np.asarray(k, dtype=float)
+    return np.arctan2(_sin_omega(k, theta), np.cos(theta) * np.cos(k))
 
 
 def group_velocity(k, theta):
-    """v_g = dω/dk = cosθ·sin k / sin ω  (celdas por tick)."""
+    """v_g = dω/dk = cosθ·sin k / sin ω  (celdas por tick).
+    Caso 0/0 (k = 0 y θ = 0): se toma el límite sin masa, v = 1."""
     k = np.asarray(k, dtype=float)
-    w = dispersion(k, theta)
+    s = _sin_omega(k, theta)
     with np.errstate(divide="ignore", invalid="ignore"):
-        v = np.cos(theta) * np.sin(k) / np.sin(w)
-    return np.where(np.isfinite(v), v, 0.0)
+        v = np.cos(theta) * np.sin(k) / s
+    return np.where(s == 0, 1.0, v)
 
 
 def eigen_omega(k, theta):

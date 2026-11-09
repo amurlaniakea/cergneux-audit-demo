@@ -21,13 +21,25 @@ def rs_over_hubble_radius(h0_km_s_mpc=67.4):
     return (2 * G * m / C**2) / hubble_radius(h0_km_s_mpc)
 
 
-def comoving_distance(z, h0=67.4, om=0.315):
-    z = np.atleast_1d(np.asarray(z, dtype=float))
+def _check_z(z):
+    z = np.asarray(z, dtype=float)
+    if np.any(z <= -1.0):
+        raise ValueError("z debe ser > −1")
+    return z
+
+
+def comoving_distance(z, h0=67.4, om=0.315, n=20001):
+    """Distancia comóvil (plano, ΛCDM). Integra en u = ln(1+z) con trapecios: preciso hasta z ~ 1e3."""
+    z = _check_z(np.atleast_1d(z))
     out = []
     for zi in z:
-        zz = np.linspace(0, zi, 4001)
-        inv_e = 1.0 / np.sqrt(om * (1 + zz) ** 3 + (1 - om))
-        out.append(np.sum((inv_e[1:] + inv_e[:-1]) * np.diff(zz)) / 2)
+        if zi == 0:
+            out.append(0.0)
+            continue
+        u = np.linspace(0.0, np.log1p(zi), n)
+        zz = np.expm1(u)
+        f = (1 + zz) / np.sqrt(om * (1 + zz) ** 3 + (1 - om))        # dz = (1+z) du
+        out.append(np.sum((f[1:] + f[:-1]) * np.diff(u)) / 2)
     return hubble_radius(h0) * np.array(out)
 
 
@@ -37,12 +49,18 @@ def luminosity_distance(z, h0=67.4, om=0.315):
 
 def sn_stretch_standard(z):
     """Dilatación temporal cosmológica estándar: Δt_obs = (1+z)·Δt_rest."""
-    return 1.0 + np.asarray(z, dtype=float)
+    return 1.0 + _check_z(z)
 
 
 def sn_stretch_cergneux(z):
     """Ley de la Fila (p. 34, 47): Tr = ρ·Tm con ρ = 1+z  ⇒  Tm = Tr/(1+z)."""
-    return 1.0 / (1.0 + np.asarray(z, dtype=float))
+    return 1.0 / (1.0 + _check_z(z))
+
+
+def observed_duration_ley_del_tiempo(z, proper_duration=1.0):
+    """Lectura coherente con la Ley del Tiempo (TC p. 31): Tr = ρ·Te con ρ = 1+z.
+    Un proceso de duración propia fija Te = N se observa durando N·ρ en nuestros segundos (estiramiento)."""
+    return (1.0 + _check_z(z)) * proper_duration
 
 
 def _planck_u(nu, temp):

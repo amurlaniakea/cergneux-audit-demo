@@ -9,8 +9,9 @@ def analytic_transmission(k, v0, a):
     e = k**2 / 2
     out = np.empty_like(e)
     lo = e < v0
-    kap = np.sqrt(2 * (v0 - e[lo]))
-    out[lo] = 1 / (1 + v0**2 * np.sinh(kap * a) ** 2 / (4 * e[lo] * (v0 - e[lo])))
+    e_lo = np.maximum(e[lo], 1e-30)          # E → 0: T → 0 sin dividir por cero
+    kap = np.sqrt(2 * (v0 - e_lo))
+    out[lo] = 1 / (1 + v0**2 * np.sinh(kap * a) ** 2 / (4 * e_lo * (v0 - e_lo)))
     q = np.sqrt(2 * (e[~lo] - v0))
     s = np.sin(q * a) ** 2
     out[~lo] = 1 / (1 + v0**2 * s / (4 * e[~lo] * np.maximum(e[~lo] - v0, 1e-30)))

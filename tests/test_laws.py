@@ -27,8 +27,8 @@ def test_rho_schwarzschild_diverges_at_rs():
     assert laws.r_over_rs_for_rho(1090.0) == pytest.approx(1.0, abs=1e-6)
 
 
-@pytest.mark.audit(id=4, ref='TC pp. 32, 48', claim='CMB en r = r_s con ρ → ∞', verdict='discrepa',
-                   note='Un ρ pequeño exige r ≫ r_s (ρ = 1,1 ⇒ r ≈ 5,76 r_s); no hay regla distancia → r')
+@pytest.mark.audit(id=4, ref='TC pp. 32, 48', claim='ρ(r) = 1/√(1−r_s/r) da el corrimiento a toda distancia (Figs. 25-29; CMB en r = r_s)', verdict='a-verificar',
+                   note='Con esa fórmula un ρ pequeño exige r ≫ r_s (ρ = 1,1 ⇒ r ≈ 5,76 r_s). Si solo vale en el límite del CMB, el PDF no da ρ(d) para z intermedios: falta una regla para ΔD(t)')
 def test_small_redshift_needs_r_far_beyond_rs():
     # ρ = 1.1  ⇒  r ≈ 5.76 r_s: más lejos que el «borde» r = r_s donde el PDF pone el CMB
     assert float(laws.r_over_rs_for_rho(1.1)) == pytest.approx(5.76, abs=0.01)

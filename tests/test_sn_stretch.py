@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 from pathlib import Path
 import pytest
+import numpy as np
+from cergneux_audit import cosmology as cos
 from cergneux_audit import sn_stretch as sn
 
 DATA = Path(__file__).resolve().parent.parent / "data"
@@ -55,3 +57,13 @@ def test_goldhaber_table_structure():
     assert sum(r["sample"] == "SCP" for r in rows) == 42 and sum(r["sample"] == "CT" for r in rows) == 18
     assert sorted(r["sn"] for r in rows if r["comment"]) == sorted(["1994G", "1996cl", "1997G", "1997I", "1997N", "1997O", "1997ap"])
     assert all(abs(float(r["w"]) / (1 + float(r["z"])) - float(r["s"])) < 0.01 for r in rows)   # s = w/(1+z)
+
+
+@pytest.mark.audit(id=20, ref='TC pp. 31, 34, 47', claim='La Ley del Tiempo (Te = Tr/ρ) y la Ley de la Fila (Tm = Tr/ρ) son coherentes entre sí', verdict='discrepa',
+                   note='Aplicada a un proceso de duración propia fija, la Ley del Tiempo da Tr = ρ·Te: estiramiento (1+z), como en los datos. Esa lectura coherente no es descartada por las supernovas, que entonces no distinguen la teoría de la expansión')
+def test_ley_del_tiempo_implies_stretch_not_shortening():
+    z, rate, sig, _ = sn.load_aging_csv(TABLE3)
+    obs = cos.observed_duration_ley_del_tiempo(z, 1.0)
+    assert np.allclose(obs, cos.sn_stretch_standard(z))        # estiramiento (1+z)
+    assert np.all(obs > cos.sn_stretch_cergneux(z))            # la Fila escrita predice lo contrario
+    assert sn.chi2_aging(z, rate, sig, 1) < 40                  # y esa versión coherente ajusta los datos (χ² ≈ 27)

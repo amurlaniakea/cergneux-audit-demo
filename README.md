@@ -105,24 +105,12 @@ Dos páginas HTML autocontenidas (sin dependencias, se abren directamente en el 
 
 ## Resultados de la auditoría
 
-Tabla resumida (fuente: [`docs/AUDITORIA.md`](docs/AUDITORIA.md)):
+La tabla completa, con los 20 veredictos, se **genera con pytest** y está en [`docs/AUDITORIA.md`](docs/AUDITORIA.md) (no se duplica aquí para que no se desincronice). Lo más destacado:
 
-| # | Afirmación (página) | Resultado | Test |
-|---|---------------------|-----------|------|
-| 1 | $c = L_p/T_p$ confirma el movimiento cuántico (TC p. 5) | Identidad por definición; no confirma nada | `test_planck_speed_is_c_by_construction` |
-| 2 | $1/T_p \approx 1.85487\times10^{43}$ (TC p. 6) | Correcto | `test_ticks_per_second_matches_paper` |
-| 3 | Gemelos: $T_1 = \gamma T_2$ (TC pp. 12-14) | Correcto; es dilatación estándar con otra notación | `test_twin_gamma_two` |
-| 4 | CMB en $r = r_s$, $\rho \to \infty$ (TC pp. 32, 48) | Un $\rho$ pequeño exige $r \gg r_s$; no hay regla distancia→$r$ | `test_small_redshift_needs_r_far_beyond_rs` |
-| 5 | $r_s$ de la masa bariónica = radio del universo observable (TC p. 43) | Identidad: $r_s$ de la masa crítica en la esfera de Hubble es $c/H_0$ | `test_rs_equals_hubble_radius_is_an_identity` |
-| 6 | Mercurio: 28,8 km por dilatación temporal (TC pp. 37-38) | La dilatación da ~8 km; 28,8 km es el desfase geométrico de la precesión de la RG | `test_mercury_paper_shift_is_the_precession_not_the_dilation` |
-| 7 | Supernovas más lejanas duran menos (TC pp. 34, 46-47) | **Descartada con datos reales**: envejecimiento espectral (Blondin et al. 2008, 35 SN) χ² ≈ 27 con 1/(1+z) frente a ≈ 796 con la Ley de la Fila; curvas de luz (Goldhaber et al. 2001, 58 SN) b ≈ 1,08 ± 0,07 frente a b = −1 | `test_real_data_contradict_ley_de_la_fila` |
-| 8 | Ley de la Energía: $\rho$ fotones por cada fotón emitido (TC pp. 30-31) | Aplicada a un cuerpo negro da emisividad $\rho^4$; FIRAS mide 1 | `test_energy_conservation_claim_gives_rho4_emissivity` |
-| 9 | $\Delta D$ constante (TC p. 10) y $\Delta D$ decreciente (TC p. 51) | Contradicción interna del texto | (documental) |
-| 10 | $dn/dt = (E_J \sin\phi + F)/\hbar$ (Túnel §4.1) | Signo incorrecto: $(F - E_J \sin\phi)/\hbar$ | `test_hamilton_sign_error_in_paper` |
-| 11 | «$n$ entero ⇒ $\phi$ discreta» (Túnel §3.3) | $n$ entero implica $\phi$ periódica, no discreta | (documental) |
-| 12 | Meseta de la tasa de escape a baja $T$ prueba tiempo discreto (Túnel §7) | La explica el túnel con disipación (DMC 1985) | `test_mqt_plateau_below_crossover_without_discrete_time` |
-| 13 | Test 1: $T_2 \sim \tau_p\cdot2\pi/(\Delta E/\hbar)$ (Túnel §12) | $\sim 10^{-53}$ s frente a $\sim 10^{-4}$ s medidos | `test_cergneux_t2_prediction_is_absurdly_short` |
-| 14 | Túnel = salto discreto sin trayectoria continua (TC p. 55, Túnel §7) | El TDSE continuo reproduce la transmisión analítica | `test_wavepacket_transmission_matches_analytic` |
+- **Correcto o identidad**: la paradoja de los gemelos es la dilatación temporal estándar; $c = L_p/T_p$ y «$r_s$ de la masa bariónica = radio observable» son identidades por definición.
+- **Errores comprobables**: el signo de $dn/dt$ en el hamiltoniano Josephson; la predicción de $T_2$ queda ~49 órdenes de magnitud por debajo de lo medido; el desfase de Mercurio de 28,8 km no sale de la dilatación temporal.
+- **Supernovas**: la predicción escrita en el PDF (las lejanas duran **menos**, $T_m = T_r/(1+z)$) contradice los datos reales (Blondin 2008 y Goldhaber 2001). Pero la propia Ley del Tiempo del PDF, aplicada a un proceso de duración propia fija, da un **estiramiento** $(1+z)$, que sí coincide con los datos. Esa lectura coherente no queda descartada, y entonces las supernovas no distinguen esta teoría de la expansión (fila 20).
+- **Abierto**: el PDF no da una regla $\rho(d)$ para corrimientos intermedios (falta la evolución de $\Delta D$), así que no se puede contrastar con el diagrama de Hubble.
 
 ---
 

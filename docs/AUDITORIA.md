@@ -4,14 +4,14 @@
 
 «TC» = *Teoría del Tiempo Cuántico* (ene. 2025); «Túnel» = *Reinterpretación del efecto túnel* (dic. 2025).
 
-**Resumen:** ℹ️ Identidad: 2 · ✅ Coincide: 4 · ❌ Discrepa: 10 · 📄 Documental: 2 · ⚠️ A verificar: 1
+**Resumen:** ℹ️ Identidad: 2 · ✅ Coincide: 4 · ⚠️ A verificar: 2 · ❌ Discrepa: 10 · 📄 Documental: 2
 
 | # | Afirmación | Página | Veredicto | Detalle | Test |
 |---|---|---|---|---|---|
 | 1 | c = L_p/T_p confirma el movimiento cuántico | TC p. 5 | ℹ️ Identidad | Identidad por definición de L_p y T_p; no confirma nada | `test_planck_speed_is_c_by_construction` |
 | 2 | 1/T_p ≈ 1,85487e43 movimientos por segundo | TC p. 6 | ✅ Coincide | Valor numérico correcto | `test_ticks_per_second_matches_paper` |
 | 3 | Gemelos: T₁ = γ·T₂ con v = 0,866 c | TC pp. 12-14 | ✅ Coincide | Es la dilatación temporal estándar con otra notación | `test_twin_gamma_two` |
-| 4 | CMB en r = r_s con ρ → ∞ | TC pp. 32, 48 | ❌ Discrepa | Un ρ pequeño exige r ≫ r_s (ρ = 1,1 ⇒ r ≈ 5,76 r_s); no hay regla distancia → r | `test_small_redshift_needs_r_far_beyond_rs` |
+| 4 | ρ(r) = 1/√(1−r_s/r) da el corrimiento a toda distancia (Figs. 25-29; CMB en r = r_s) | TC pp. 32, 48 | ⚠️ A verificar | Con esa fórmula un ρ pequeño exige r ≫ r_s (ρ = 1,1 ⇒ r ≈ 5,76 r_s). Si solo vale en el límite del CMB, el PDF no da ρ(d) para z intermedios: falta una regla para ΔD(t) | `test_small_redshift_needs_r_far_beyond_rs` |
 | 5 | r_s de la masa bariónica = radio del universo observable | TC p. 43 | ℹ️ Identidad | r_s de la masa crítica en la esfera de Hubble es c/H₀ por álgebra, no por coincidencia | `test_rs_equals_hubble_radius_is_an_identity` |
 | 6 | Mercurio: 28,8 km de desfase por dilatación temporal | TC pp. 37-38 | ❌ Discrepa | La dilatación da ~8 km; 28,8 km es el desfase geométrico de la precesión de la RG | `test_mercury_paper_shift_is_the_precession_not_the_dilation` |
 | 7 | Las supernovas más lejanas duran menos (Tm = Tr/(1+z)) | TC pp. 34, 46-47 | ❌ Discrepa | Datos reales (Blondin et al. 2008, Tabla 3, 35 SN): χ²≈27 para el estándar 1/(1+z) y ≈796 para la Ley de la Fila; exponente b=0,97±0,10 (la Fila exige b=−1) | `test_real_data_contradict_ley_de_la_fila` |
@@ -27,5 +27,6 @@
 | 17 | La luz avanza una celda de Planck por tick en cualquier dirección de una retícula cúbica (c isótropa) | TC pp. 4-6 | ❌ Discrepa | Literal en retícula cúbica la velocidad varía un 42 % entre ejes y diagonales (1/√3 a 1, o 1 a √3); las pruebas de isotropía de c llegan a ~1e-17 | `test_cubic_lattice_light_is_anisotropic_at_order_one` |
 | 18 | Una retícula espacial de Planck es compatible con las cotas de dispersión de la luz | TC pp. 4-6 | ✅ Coincide | Dispersión cuadrática v≈1−(ka)²/8 ⇒ E_QG,2≈3,5 E_P ≈ 4e19 GeV, muy por encima de la cota de Fermi-LAT (1,3e11 GeV): compatible con las cotas y no detectable hoy | `test_spatial_lattice_dispersion_is_far_above_grb_bound` |
 | 19 | Las curvas de luz de supernovas lejanas se ven más estrechas (w = s/(1+z)) | TC pp. 34, 46-47 | ❌ Discrepa | Muestra independiente (Goldhaber et al. 2001, 58 SN, curvas de luz): ln w = a + b·ln(1+z) da b≈1,08±0,07; la Fila exige b=−1 (>25σ), χ²≈857 frente a ≈57 | `test_goldhaber_light_curve_widths_contradict_fila` |
+| 20 | La Ley del Tiempo (Te = Tr/ρ) y la Ley de la Fila (Tm = Tr/ρ) son coherentes entre sí | TC pp. 31, 34, 47 | ❌ Discrepa | Aplicada a un proceso de duración propia fija, la Ley del Tiempo da Tr = ρ·Te: estiramiento (1+z), como en los datos. Esa lectura coherente no es descartada por las supernovas, que entonces no distinguen la teoría de la expansión | `test_ley_del_tiempo_implies_stretch_not_shortening` |
 
 El veredicto es la tesis del autor del repo; que el test pase significa que la evidencia es reproducible.
