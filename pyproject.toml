@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cergneux-audit"
-version = "0.1.0"
+version = "0.2.1"
 description = "Auditoría ejecutable de las ecuaciones de R. J. Cergneux (Tiempo Cuántico y túnel Josephson) contra la física estándar"
 readme = "README.md"
 requires-python = ">=3.9"

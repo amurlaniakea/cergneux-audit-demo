@@ -19,6 +19,8 @@
 - [Limitaciones](#limitaciones)
 - [Hoja de ruta](#hoja-de-ruta)
 - [Referencias](#referencias)
+- [Cómo citar](#cómo-citar)
+- [Cómo contribuir](#cómo-contribuir)
 - [Licencia y créditos](#licencia-y-créditos)
 
 ---
@@ -155,7 +157,7 @@ def test_hamilton_sign_error_in_paper():
 
 - [x] Retícula discreta tipo Planck: paseo cuántico 1D (`lattice.py`) y retícula cúbica 3D con cotas observacionales (`lattice3d.py`). Pendiente: más modelos de retícula (p. ej. isótropos) y cotas de dispersión en otras partículas.
 - [x] Contrastar el estiramiento de supernovas con datos reales (Blondin et al. 2008). Pendiente: otras muestras (espectros o curvas de luz crudas).
-- [ ] Contactar al autor para discutir los veredictos documentados.
+- [x] Contactar al autor: fue invitado a comentar el repositorio y respondió. Pendiente: incorporar sus aclaraciones cuando estén por escrito y con su permiso.
 - [ ] Añadir visualizador para la precesión de Mercurio (dilatación vs. precesión geométrica).
 
 ---
@@ -174,6 +176,28 @@ Solo se citan las que se pueden comprobar directamente en el código o en la lit
 | **Eisele, Nevsky, Schiller (2009)** — *Phys. Rev. Lett.* **103**, 090401 | Isotropía de la velocidad de la luz a ~$10^{-17}$ |
 
 > **Nota**: Si una referencia no se puede comprobar en el código o en la literatura accesible, se ha omitido intencionadamente. No se inventan DOIs.
+
+---
+
+## Cómo citar
+
+GitHub muestra el botón **«Cite this repository»** a partir de [`CITATION.cff`](CITATION.cff). Como BibTeX:
+
+```bibtex
+@software{sordo_cergneux_audit_demo,
+  author  = {Sordo Martínez, Pedro},
+  title   = {cergneux-audit-demo: auditoría ejecutable de las ecuaciones de R. J. Cergneux},
+  year    = {2026},
+  version = {0.2.1},
+  url     = {https://github.com/amurlaniakea/cergneux-audit-demo}
+}
+```
+
+---
+
+## Cómo contribuir
+
+Se aceptan *issues* y *pull requests*; detalles en [`CONTRIBUTING.md`](CONTRIBUTING.md). Si crees que una ecuación de los documentos está mal interpretada, usa la plantilla **«Corrección de una lectura»**. El historial de versiones está en [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 

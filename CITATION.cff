@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "Si usas este software o sus resultados, cítalo con estos metadatos."
+type: software
+title: "cergneux-audit-demo: auditoría ejecutable de las ecuaciones de R. J. Cergneux"
+abstract: >-
+  Prototipo de código abierto que convierte las afirmaciones de dos documentos de Ricardo J. Cergneux
+  (Teoría del Tiempo Cuántico y reinterpretación del efecto túnel Josephson) en tests ejecutables,
+  y las contrasta con la física estándar y con datos publicados de supernovas Ia. El informe de
+  resultados se genera con pytest.
+authors:
+  - family-names: "Sordo Martínez"
+    given-names: "Pedro"
+    alias: "MagoPredator"
+repository-code: "https://github.com/amurlaniakea/cergneux-audit-demo"
+url: "https://github.com/amurlaniakea/cergneux-audit-demo"
+license: AGPL-3.0-or-later
+version: 0.2.1
+date-released: 2026-11-10
+keywords:
+  - physics
+  - education
+  - verification
+  - reproducibility
+  - josephson-junction
+  - cosmology
+  - supernovae
+  - python
